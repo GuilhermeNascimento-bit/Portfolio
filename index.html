@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Guilherme Bezerra — Backend Engineer</title>
+  <title>Guilherme do Nascimento Bezerra — Backend Engineer</title>
   <meta name="description" content="Guilherme Bezerra — Computer Science student and Backend Engineer passionate about software architecture, scalable backends, and AI integrations." />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -136,6 +136,7 @@
         <a href="#about" class="nav-link hover:text-slate-100 transition-colors">About</a>
         <a href="#skills" class="nav-link hover:text-slate-100 transition-colors">Skills</a>
         <a href="#projects" class="nav-link hover:text-slate-100 transition-colors">Projects</a>
+        <a href="#live" class="nav-link hover:text-slate-100 transition-colors">Live</a>
         <a href="#contact" class="nav-link hover:text-slate-100 transition-colors">Contact</a>
       </div>
     </div>
@@ -192,7 +193,7 @@
             <div class="relative w-full h-full rounded-full overflow-hidden">
               <img src="photo.jpg" alt="Guilherme Bezerra"
                    class="w-full h-full object-cover"
-                   style="object-position: 50% 15%;" />
+                   style="object-position: 100% 15%;" />
             </div>
           </div>
 
@@ -350,10 +351,48 @@
     </div>
   </section>
 
+  <!-- Live -->
+  <section id="live" class="max-w-5xl mx-auto px-6 py-24 section-hidden">
+    <div class="mb-12">
+      <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">04 // Live</p>
+      <h2 class="text-3xl font-bold text-white">Infrastructure as a Project</h2>
+      <p class="text-slate-400 mt-3 max-w-lg text-sm">
+        This portfolio is powered by a real FastAPI backend with Redis caching. Data fetched live from the GitHub API.
+      </p>
+    </div>
+
+    <!-- API Stats bar -->
+    <div class="flex flex-wrap gap-4 mb-10">
+      <div class="flex items-center gap-3 bg-dark-800 border border-dark-700 rounded-xl px-5 py-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-mono text-xs text-slate-400">requests / 24h</span>
+        <span id="stat-requests" class="font-mono text-sm text-emerald-400 font-semibold">—</span>
+      </div>
+      <div class="flex items-center gap-3 bg-dark-800 border border-dark-700 rounded-xl px-5 py-4">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span class="font-mono text-xs text-slate-400">avg response</span>
+        <span id="stat-latency" class="font-mono text-sm text-cyan-400 font-semibold">—</span>
+      </div>
+      <div class="flex items-center gap-3 bg-dark-800 border border-dark-700 rounded-xl px-5 py-4">
+        <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+        <span class="font-mono text-xs text-slate-400">public repos</span>
+        <span id="stat-repos" class="font-mono text-sm text-violet-400 font-semibold">—</span>
+      </div>
+    </div>
+
+    <!-- GitHub Repos grid -->
+    <div id="github-repos" class="grid md:grid-cols-3 gap-4">
+      <!-- Skeleton placeholders -->
+      <div class="bg-dark-800/60 border border-dark-700/50 rounded-xl p-5 animate-pulse h-36"></div>
+      <div class="bg-dark-800/60 border border-dark-700/50 rounded-xl p-5 animate-pulse h-36"></div>
+      <div class="bg-dark-800/60 border border-dark-700/50 rounded-xl p-5 animate-pulse h-36"></div>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section id="contact" class="max-w-5xl mx-auto px-6 py-24 section-hidden">
     <div class="mb-12">
-      <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">04 // Contact</p>
+      <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">05 // Contact</p>
       <h2 class="text-3xl font-bold text-white">Let's Connect</h2>
       <p class="text-slate-400 mt-3 max-w-lg">
         Open to internships, collaborations, and interesting projects. Feel free to reach out.
@@ -399,7 +438,7 @@
   <footer class="border-t border-dark-700 mt-8">
     <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <span class="font-mono text-xs text-slate-600">© 2026 Guilherme Bezerra</span>
-      <span class="font-mono text-xs text-slate-700">Built with HTML + Tailwind CSS</span>
+      <span id="footer-stats" class="font-mono text-xs text-slate-700">Built with FastAPI + Redis + GitHub API</span>
     </div>
   </footer>
 
@@ -415,6 +454,60 @@
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.section-hidden').forEach(el => observer.observe(el));
+
+    // ── Live API ──────────────────────────────────────────────
+    const API_URL = 'https://portfolio-api-1t2s.onrender.com';
+
+    const LANG_COLORS = {
+      Python: '#3572A5', JavaScript: '#f1e05a', TypeScript: '#2b7489',
+      HTML: '#e34c26', CSS: '#563d7c', Shell: '#89e051',
+    };
+
+    async function loadLiveData() {
+      try {
+        const [ghRes, statsRes] = await Promise.all([
+          fetch(`${API_URL}/github`),
+          fetch(`${API_URL}/stats`),
+        ]);
+        const gh = await ghRes.json();
+        const stats = await statsRes.json();
+
+        document.getElementById('stat-requests').textContent = stats.requests_24h.toLocaleString();
+        document.getElementById('stat-latency').textContent = `${stats.avg_response_ms} ms`;
+        document.getElementById('stat-repos').textContent = gh.public_repos;
+        document.getElementById('footer-stats').textContent =
+          `Este site consumiu ${stats.requests_24h} req nas últimas 24h · resposta média ${stats.avg_response_ms} ms`;
+
+        const grid = document.getElementById('github-repos');
+        grid.innerHTML = gh.repos.map(r => `
+          <a href="${r.url}" target="_blank" rel="noopener"
+             class="group bg-dark-800 border border-dark-700 rounded-xl p-5 card-glow transition-all duration-300 flex flex-col gap-3 hover:border-brand/40">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-sm text-white font-medium truncate">${r.name}</span>
+              <svg class="w-4 h-4 text-slate-600 group-hover:text-brand transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </div>
+            <p class="text-slate-500 text-xs leading-relaxed flex-1">${r.description || 'No description'}</p>
+            <div class="flex items-center gap-3">
+              ${r.language ? `<span class="flex items-center gap-1.5 text-xs text-slate-400">
+                <span class="w-2.5 h-2.5 rounded-full" style="background:${LANG_COLORS[r.language] || '#8b949e'}"></span>
+                ${r.language}
+              </span>` : ''}
+              <span class="flex items-center gap-1 text-xs text-slate-500">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+                ${r.stars}
+              </span>
+            </div>
+          </a>
+        `).join('');
+      } catch {
+        document.getElementById('github-repos').innerHTML =
+          '<p class="text-slate-600 font-mono text-sm col-span-3">API offline — deploy pendente.</p>';
+      }
+    }
+
+    loadLiveData();
   </script>
 </body>
 </html>
