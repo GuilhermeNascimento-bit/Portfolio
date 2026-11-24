@@ -136,6 +136,15 @@
           </div>
           <div>
             <p data-i18n="p1.desc">Track income and expenses with per-user data in Firestore, interactive charts, bill reminders, cash-flow reports and automatic financial diagnostics. The core logic started as a Python script I wrote for myself.</p>
+            <div class="flow" role="group" aria-label="How data moves through the app" data-i18n-attr="aria-label:f1.label">
+              <div class="node"><span data-i18n="f1.you">You</span><small data-i18n="f1.youSub">add a transaction</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>React</span><small data-i18n="f1.appSub">validates and saves</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>Firestore</span><small data-i18n="f1.dbSub">only your data</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span data-i18n="f1.out">Charts and reports</span><small data-i18n="f1.outSub">reminders, diagnostics</small></div>
+            </div>
             <ul class="tech" aria-label="Technologies" data-i18n-attr="aria-label:tech.label">
               <li>React</li><li>Firebase</li><li>Firestore</li><li>Recharts</li>
             </ul>
@@ -152,6 +161,15 @@
           </div>
           <div>
             <p data-i18n="p2.desc">The backend behind this site. A FastAPI service that serves my GitHub data with Redis caching, records request metrics through custom middleware, and is covered by 13 automated tests. Deployed on Render.</p>
+            <div class="flow" id="api-flow" role="group" aria-label="How this page gets its data" data-i18n-attr="aria-label:f2.label">
+              <div class="node"><span data-i18n="f2.page">This page</span><small data-i18n="f2.pageSub">fetch on load</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>FastAPI</span><small data-i18n="f2.apiSub">on Render</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>Redis</span><small>cache</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>GitHub API</span><small data-i18n="f2.ghSub">on a cache miss</small></div>
+            </div>
             <p class="proof"><a href="#status" data-i18n="p2.proof">It's the API answering in the panel at the top of this page.</a></p>
             <ul class="tech" aria-label="Technologies" data-i18n-attr="aria-label:tech.label">
               <li>Python</li><li>FastAPI</li><li>Redis</li><li>pytest</li>
@@ -210,7 +228,14 @@
         <h2 id="contact-title" data-i18n="contact.title" data-scramble>Get in touch</h2>
         <div>
           <p class="section-intro" data-i18n="contact.intro">Open to junior and remote roles in software development and IT. Email is the fastest way to reach me.</p>
-          <a class="email" href="mailto:guilhermenascimentobz@gmail.com">guilhermenascimentobz<wbr>@gmail.com</a>
+          <div class="email-row">
+            <a class="email" href="mailto:guilhermenascimentobz@gmail.com">guilhermenascimentobz<wbr>@gmail.com</a>
+            <button type="button" class="copy-btn">
+              <svg class="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+              <svg class="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span data-i18n="contact.copy" aria-live="polite">Copy email</span>
+            </button>
+          </div>
           <p class="contact-links">
             <a href="https://github.com/GuilhermeNascimento-bit" target="_blank" rel="noopener">GitHub</a>
             <a href="https://www.linkedin.com/in/guilherme-do-nascimento-bezerra-38a492293/" target="_blank" rel="noopener">LinkedIn</a>

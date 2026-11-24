@@ -60,6 +60,20 @@
       'contact.title': 'Get in touch',
       'contact.intro': 'Open to junior and remote roles in software development and IT. Email is the fastest way to reach me.',
       'footer.built': 'Built with HTML, CSS and JavaScript, hosted on GitHub Pages.',
+      'f1.label': 'How data moves through the app',
+      'f1.you': 'You',
+      'f1.youSub': 'add a transaction',
+      'f1.appSub': 'validates and saves',
+      'f1.dbSub': 'only your data',
+      'f1.out': 'Charts and reports',
+      'f1.outSub': 'reminders, diagnostics',
+      'f2.label': 'How this page gets its data',
+      'f2.page': 'This page',
+      'f2.pageSub': 'fetch on load',
+      'f2.apiSub': 'on Render',
+      'f2.ghSub': 'on a cache miss',
+      'contact.copy': 'Copy email',
+      'contact.copied': 'Copied',
     },
     pt: {
       'meta.title': 'Guilherme Bezerra, desenvolvedor júnior',
@@ -118,6 +132,20 @@
       'contact.title': 'Vamos conversar',
       'contact.intro': 'Aberto a vagas júnior e remotas em desenvolvimento de software e TI. Email é o jeito mais rápido de falar comigo.',
       'footer.built': 'Feito com HTML, CSS e JavaScript, hospedado no GitHub Pages.',
+      'f1.label': 'Como os dados passam pelo app',
+      'f1.you': 'Você',
+      'f1.youSub': 'lança uma transação',
+      'f1.appSub': 'valida e salva',
+      'f1.dbSub': 'só os seus dados',
+      'f1.out': 'Gráficos e relatórios',
+      'f1.outSub': 'lembretes, diagnóstico',
+      'f2.label': 'Como esta página busca os dados',
+      'f2.page': 'Esta página',
+      'f2.pageSub': 'fetch ao carregar',
+      'f2.apiSub': 'no Render',
+      'f2.ghSub': 'se faltar no cache',
+      'contact.copy': 'Copiar email',
+      'contact.copied': 'Copiado',
     },
   };
 
@@ -186,9 +214,9 @@
 
   // Headings decode letter by letter into the new language.
   const GLYPHS = 'abcdefghijklmnopqrstuvwxyzáãçéêíóõú';
-  function scramble(el, delay) {
+  function scramble(el, delay, fromText) {
     const id = (el._swap = (el._swap || 0) + 1);
-    const from = el.textContent;
+    const from = fromText ?? el.textContent;
     const to = t(el.dataset.i18n);
     const len = Math.max(from.length, to.length);
     const duration = 560;
@@ -198,7 +226,12 @@
       if (el._swap !== id) return;
       if (start === null) start = now + delay;
       const p = (now - start) / duration;
-      if (p >= 1) { el.textContent = t(el.dataset.i18n); return; }
+      if (p >= 1) {
+        el.textContent = t(el.dataset.i18n);
+        el.classList.remove('pending');
+        el.removeAttribute('aria-label');
+        return;
+      }
       if (p > 0) {
         let out = '';
         for (let i = 0; i < len; i++) {
@@ -226,7 +259,11 @@
     store('lang', lang);
     applyAttrs();
 
-    els.forEach((el) => { if (!visible.includes(el)) el.textContent = t(el.dataset.i18n); });
+    els.forEach((el) => {
+      if (visible.includes(el)) return;
+      el.textContent = t(el.dataset.i18n);
+      if (el.classList.contains('pending')) el.setAttribute('aria-label', el.textContent);
+    });
     visible.forEach((el, i) => {
       const delay = Math.min(i, 16) * 28;
       if (el.hasAttribute('data-scramble')) scramble(el, delay);
@@ -409,9 +446,11 @@
     }
     if (!live.repos) return;
 
-    reposEl.innerHTML = live.repos.map((r) => `
-      <li class="repo">
-        <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">
+    const enter = !live.reposShown && !reduceMotion.matches;
+    live.reposShown = true;
+    reposEl.innerHTML = live.repos.map((r, i) => `
+      <li class="repo${enter ? ' enter' : ''}" style="--i:${i}">
+        <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" style="--c:${LANG_COLORS[r.language] || 'var(--link)'}">
           <span class="repo-name">${escapeHtml(r.name)}</span>
           <span class="repo-desc">${escapeHtml(r.description || t('repos.noDesc'))}</span>
           <span class="repo-meta">
@@ -423,7 +462,7 @@
       </li>`).join('');
     reposEl.removeAttribute('aria-busy');
 
-    if (animate && isOnScreen(reposEl)) {
+    if (animate && !enter && isOnScreen(reposEl)) {
       reposEl.animate([{ opacity: 0.25, filter: 'blur(3px)' }, { opacity: 1, filter: 'blur(0)' }], { duration: 380, easing: 'ease-out' });
     }
   }
@@ -459,6 +498,7 @@
       live.rtt = gh.ms;
       renderMetrics();
       renderRepos(true);
+      if (isOnScreen(apiFlow)) runFlow(apiFlow);
 
       // Now that the server is awake, measure a warm round trip.
       try {
@@ -473,8 +513,74 @@
     }
   }
 
-  /* ---------- Start ---------- */
+  // Apply the saved language before headings are prepared for their reveal.
   if (lang !== 'en') applyText();
+
+  /* ---------- Data-flow diagrams ---------- */
+  const apiFlow = $('#api-flow');
+
+  function runFlow(flow) {
+    if (reduceMotion.matches) return;
+    const now = performance.now();
+    if (flow._ranAt && now - flow._ranAt < 2000) return;
+    flow._ranAt = now;
+    flow.classList.remove('run');
+    void flow.offsetWidth;
+    flow.classList.add('run');
+  }
+
+  $$('.flow').forEach((flow) => {
+    // node i is reached after wire i-1, so they share a delay index
+    $$('.node', flow).forEach((n, i) => n.style.setProperty('--i', i));
+    $$('.wire', flow).forEach((w, i) => w.style.setProperty('--i', i));
+    flow.closest('.project').addEventListener('pointerenter', () => runFlow(flow));
+  });
+
+  /* ---------- Reveal on first view ---------- */
+  const headings = $$('h2[data-scramble]');
+  if ('IntersectionObserver' in window && !reduceMotion.matches) {
+    const seen = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        seen.unobserve(el);
+        if (el.matches('.flow')) runFlow(el);
+        else if (el.classList.contains('pending')) scramble(el, 0, '');
+      });
+    }, { threshold: 0.6 });
+
+    headings.forEach((h) => {
+      if (isOnScreen(h)) return;
+      h.setAttribute('aria-label', h.textContent);
+      h.classList.add('pending');
+      h.textContent = ' ';
+      seen.observe(h);
+    });
+    $$('.flow').forEach((f) => seen.observe(f));
+  }
+
+  /* ---------- Copy email ---------- */
+  const copyBtn = $('.copy-btn');
+  copyBtn.addEventListener('click', async () => {
+    const label = $('span', copyBtn);
+    try {
+      await navigator.clipboard.writeText('guilhermenascimentobz@gmail.com');
+    } catch (e) {
+      window.location.href = 'mailto:guilhermenascimentobz@gmail.com';
+      return;
+    }
+    copyBtn.classList.add('copied');
+    label.dataset.i18n = 'contact.copied';
+    label.textContent = t('contact.copied');
+    clearTimeout(copyBtn._timer);
+    copyBtn._timer = setTimeout(() => {
+      copyBtn.classList.remove('copied');
+      label.dataset.i18n = 'contact.copy';
+      label.textContent = t('contact.copy');
+    }, 2200);
+  });
+
+  /* ---------- Start ---------- */
   applyAttrs();
   loadLive();
 })();
