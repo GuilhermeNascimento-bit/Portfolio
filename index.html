@@ -123,7 +123,7 @@
       <div class="wrap">
         <div class="section-head">
           <h2 id="projects-title" data-i18n="projects.title" data-scramble>Projects</h2>
-          <p class="section-intro" data-i18n="projects.intro">Two projects that show how I work end to end, from the data model to the deploy.</p>
+          <p class="section-intro" data-i18n="projects.intro">Three projects that show how I work end to end, from the data model to the deploy.</p>
         </div>
 
         <article class="project">
@@ -147,6 +147,30 @@
             </div>
             <ul class="tech" aria-label="Technologies" data-i18n-attr="aria-label:tech.label">
               <li>React</li><li>Firebase</li><li>Firestore</li><li>Recharts</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="project">
+          <div>
+            <h3 data-i18n="p3.title">Helpdesk — IT support tickets</h3>
+            <p class="project-links">
+              <a href="https://github.com/GuilhermeNascimento-bit/helpdesk-ti" target="_blank" rel="noopener" data-i18n="link.source">Source code</a>
+            </p>
+          </div>
+          <div>
+            <p data-i18n="p3.desc">An internal IT support system, built from what I saw doing IT support at my last job. Employees describe the problem in their own words; a technician takes it from a live queue and talks to them over real-time chat, then fixes it remotely, schedules a desk visit in one click, or logs a purchase or vendor service with a due date. Employees rate the service, and admins approve sign-ups and follow the queue, resolution time and satisfaction on a dashboard. Bilingual (PT/EN), light and dark themes, custom accent color.</p>
+            <div class="flow" role="group" aria-label="How a ticket moves through the system" data-i18n-attr="aria-label:f3.label">
+              <div class="node"><span data-i18n="f3.emp">Employee</span><small data-i18n="f3.empSub">describes the problem</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span>Socket.IO</span><small data-i18n="f3.chatSub">real-time chat</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span data-i18n="f3.tech">Technician</span><small data-i18n="f3.techSub">remote or on site</small></div>
+              <div class="wire" aria-hidden="true"></div>
+              <div class="node"><span data-i18n="f3.dash">Dashboard</span><small data-i18n="f3.dashSub">queue, time, ratings</small></div>
+            </div>
+            <ul class="tech" aria-label="Technologies" data-i18n-attr="aria-label:tech.label">
+              <li>Node.js</li><li>Express</li><li>Socket.IO</li><li>React</li><li>SQLite</li>
             </ul>
           </div>
         </article>
